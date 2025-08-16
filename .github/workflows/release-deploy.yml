@@ -1,0 +1,26 @@
+name: Deploy Tagged Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Cualquier tag que empiece con 'v'
+
+jobs:
+  deploy-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code de la versión etiquetada
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 34.121.80.60 >> ~/.ssh/known_hosts
+
+      - name: Deploy tagged release
+        run: |
+          scp main.py github-actions@34.121.80.60:/home/ubuntu/mi-app/
+

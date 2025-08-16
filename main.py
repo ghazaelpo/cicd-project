@@ -1,6 +1,1 @@
-print('Hi! from Feature')
-
-print('Inicio del sistema')
-raise Exception('Simulando fallo en producción')
-
-
+print('Hi! This is a test to validate TAG workflow is working')

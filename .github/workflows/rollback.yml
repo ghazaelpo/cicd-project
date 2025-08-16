@@ -1,0 +1,30 @@
+name: Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión v1.0.0 para rollback'
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout versión seleccionada
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 34.121.80.60 >> ~/.ssh/known_hosts
+
+      - name: Rollback main.py
+        run: |
+          scp main.py github-actions@34.121.80.60:/home/ubuntu/mi-app/
+

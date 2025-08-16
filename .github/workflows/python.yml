@@ -1,4 +1,4 @@
-name: Python CI
+name: CI/CD Python
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,6 +25,24 @@ jobs:
           pip install pytest
 
       - name: Run tests
+        run: pytest
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
         run: |
-          pytest
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 34.121.80.60 >> ~/.ssh/known_hosts
+
+      - name: Deploy main.py to GCP VM
+        run: |
+          scp main.py ubuntu@34.121.80.60:/home/ubuntu/mi-app/
 

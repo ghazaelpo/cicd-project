@@ -44,5 +44,5 @@ jobs:
 
       - name: Deploy main.py to GCP VM
         run: |
-          scp main.py ubuntu@34.121.80.60:/home/ubuntu/mi-app/
+          scp main.py github-actions@34.121.80.60:/home/ubuntu/mi-app/
 
